@@ -34,9 +34,8 @@ session.dataTask(with: URL(string: baseURLLL)!){
         let objs = try JSONDecoder().decode(Swifter.self, from: data!)// decoding our data
         print(objs)
     }catch{
-        
-    }
-}.resume()
+        }
+    }.resume()
 }
 
 
@@ -89,11 +88,56 @@ func dosomething3(){
         }
     }.resume()
 }
-dosomething3()
+//dosomething3()
+//more complex
+let complexURL = "https://samples.openweathermap.org/data/2.5/forecast/daily?lat=35&lon=139&cnt=10&appid=b1b15e88fa797225412429c1c50c122a1"
+struct temp:Decodable {
+    var day:Double
+    var night:Double
+}
+struct response:Decodable {
+    var temp : temp
+}
+struct complexStruct2:Decodable {
+    var list:[response]
+}
+var dosomething4Array:[response] = []
+func dosomething4(){
+    let session:URLSession = .shared
+    session.dataTask(with: URL(string: complexURL)!) {
+        data,resp,err in
+        do{
+            let myMoreComplexStruct = try JSONDecoder().decode(complexStruct2.self, from: data!)
+            dosomething4Array = myMoreComplexStruct.list
+            print(dosomething4Array[2].temp.day)
+        }catch{
+            print(err)
+        }
+        }.resume()
+}
 
 
-
-
-
-
+let simpsonURL = "http://api.duckduckgo.com/?q=simpsons+characters&format=json"
+struct CharacterProfile:Decodable{
+    var Text: String
+    var FirstURL : String
+}
+struct simpson:Decodable{
+    var RelatedTopics : [CharacterProfile]?
+}
+func doSomething5(){
+    let session = URLSession.shared
+    session.dataTask(with: URL(string: simpsonURL)!){
+        data,resp,error in
+        do{
+            let arrayObj = try JSONDecoder().decode(simpson.self, from: data!)
+            print(arrayObj.RelatedTopics![0])
+        }catch{
+            print(error)
+        }
+        }.resume()
+}
+let strOfPresident = "geroges sdfknalkwnf - kdsfanflkdnlkwq wefwnklnwlkvnwkl"
+ print(strOfPresident.range(of: "(.+?)-", options: .regularExpression)!)
+let regex = try? NSRegularExpression(pattern: "(.+?)-")
 
